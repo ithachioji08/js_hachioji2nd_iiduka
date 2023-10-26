@@ -73,21 +73,35 @@
 		$('#auto').click(()=>{
 			$('#auto').hide();
 			$('#stop').show();
-			let score;
-			if(Math.random() > 0.5){
-				score = getTwinkleStar();
-				$('#musicName').text("自動演奏中です：きらきら星");
-			}else{
-				score = getChoolip();
-				$('#musicName').text("自動演奏中です：チューリップ");
-			};
-			
-			autoplay(score);
+			const score = getRondomScore();
+			startAutoplay(score);
 		});
 
-		function autoplay(score){
-			let roopId = [];
-			let stopId;
+		function getRondomScore(){
+			if(Math.random() > 0.5){
+				$('#musicName').text("自動演奏中です：きらきら星");
+				return getTwinkleStar();
+			}else{
+				$('#musicName').text("自動演奏中です：チューリップ");
+				return getChoolip();
+			};
+		}
+
+		function startAutoplay(score){
+			const loopId = playScore(score);
+			
+			setTimeout(()=>{stop()},score[score.length-1].time);
+			$('#stop').click(()=>{
+				loopId.forEach((id)=>{
+					clearTimeout(id);
+				});
+				stop();
+			});
+		};
+
+		
+		function playScore(score){
+			let loopId = [];
 			score.forEach((element,i,array) => {
 				let time;
 				if (i==0){
@@ -95,25 +109,16 @@
 				}else{
 					time = array[i-1].time;
 				}
-				roopId.push(
+				loopId.push(
 					setTimeout(()=>{
 						$('#soundName').text(element.scale);
-						$('#terop').text($('#terop').text() + element.lylic);
+						$('#terop').text($('#terop').text() + element.lyric);
 					},time)	
 				);
 			});
+			return loopId;
+		}
 
-			setTimeout(()=>{stop()},score[score.length-1].time);
-			$('#stop').click(()=>{
-				roopId.forEach((id)=>{
-					clearInterval(id);
-				});
-				clearInterval(stopId);
-				stop();
-			});
-		};
-
-		
 		function stop(){
 			$('#musicName').text("");
 			$('#soundName').text('');
@@ -135,9 +140,9 @@
 				'ソ(0.5秒)休符(0.5秒)ラ(0.5秒)休符(0.5秒)ラ(0.5秒)休符(0.5秒)ソ(2秒)' +
 				'ファ(0.5秒)休符(0.5秒)ファ(0.5秒)休符(0.5秒)ミ(0.5秒)休符(0.5秒)ミ(0.5秒)' +
 				'休符(0.5秒)レ(0.5秒)休符(0.5秒)レ(0.5秒)休符(0.5秒)ド(4秒)';
-			const lylics = 'きらきらひかるおそらのほしよまばたきしてはみんなをみてるきらきらひかるよぞらのほしよ';
+			const lyrics = 'きらきらひかるおそらのほしよまばたきしてはみんなをみてるきらきらひかるよぞらのほしよ';
 
-			return getNotes(scales,lylics);
+			return getNotes(scales,lyrics);
 		};
 
 		function getChoolip(){
@@ -150,40 +155,40 @@
 				'ソ(1秒)ミ(0.25秒)休符(0.25秒)ミ(0.25秒)休符(0.25秒)レ(0.25秒)'+
 				'休符(0.25秒)レ(0.25秒)休符(0.25秒)ド(4秒)';
 			//音符ひとつで複数文字の仕様上、配列にしないといけない。
-			const lylics = ['さ','い','た','さ','い','た','チュー','リッ','プ','の','は','な','が','な','らん',
+			const lyrics = ['さ','い','た','さ','い','た','チュー','リッ','プ','の','は','な','が','な','らん',
 				'だ','な','らん','だ','あ','か','し','ろ','き','い','ろ','ど','の','は','な','み','て','も','き','れ','い','だ','な'];
-			return getNotes(scales,lylics);
+			return getNotes(scales,lyrics);
 		};
 
-		function getNotes(scales,lylics){
+		function getNotes(scales,lyrics){
 			let notes      = [];
 			let timeSome   = 0;
 			let scaleArray = scales.split(')');
-			let lylicCount = -1;
+			let lyricCount = -1;
 			let scale;
-			let lylic;
+			let lyric;
 			scaleArray.pop();  //splitの都合上、最後に空っぽのデータが出来るので削除
 			scaleArray.forEach(scale=>{
 				let splitedScale = scale.split('秒')[0].split('(');
 				if (splitedScale[0] == '休符'){
 					scale = '';
-					lylic = '-';
+					lyric = '-';
 				}else{
 					scale = splitedScale[0];
-					lylicCount++;
-					lylic = lylics[lylicCount]
+					lyricCount++;
+					lyric = lyrics[lyricCount]
 				}
 				timeSome+= parseFloat(splitedScale[1]) *1000;
-				notes.push(new Note(scale,timeSome,lylic));
+				notes.push(new Note(scale,timeSome,lyric));
 			});
 			return notes;
 		};
 
 		class Note{
-			constructor(scale,time,lylic){
+			constructor(scale,time,lyric){
 				this.scale = scale;
 				this.time  = time;
-				this.lylic = lylic;
+				this.lyric = lyric;
 			}
 		};
 
