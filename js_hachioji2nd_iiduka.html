@@ -83,11 +83,12 @@
 				return getTwinkleStar();
 			}else{
 				$('#musicName').text("自動演奏中です：チューリップ");
-				return getChoolip();
+				return getChulip();
 			};
 		}
 
 		function startAutoplay(score){
+			$('#stop').off('click');  // 既存のイベントハンドラを削除
 			const loopId = playScore(score);
 			
 			setTimeout(()=>{stop()},score[score.length-1].time);
@@ -98,7 +99,6 @@
 				stop();
 			});
 		};
-
 		
 		function playScore(score){
 			let loopId = [];
@@ -145,7 +145,7 @@
 			return getNotes(scales,lyrics);
 		};
 
-		function getChoolip(){
+		function getChulip(){
 			const scales = 'ド(0.5秒)レ(0.5秒)ミ(1秒)ド(0.5秒)レ(0.5秒)ミ(1秒)'+
 				'ソ(0.5秒)ミ(0.5秒)レ(0.5秒)ド(0.5秒)レ(0.5秒)ミ(0.5秒)レ(1秒)'+
 				'ド(0.5秒)レ(0.5秒)ミ(1秒)ド(0.5秒)レ(0.5秒)ミ(1秒)'+
