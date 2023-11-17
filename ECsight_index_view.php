@@ -8,7 +8,7 @@
 <body>
 	<?php include "ECsight_header.html" ?>
 	<h1>ログイン</h1>
-	<?php  if($message!='')?><?php print $message;?>
+	<?php  if($message!='')?><p class="error"><?php print $message;?></p>
 	<form method="post">
 		<p>ユーザー名:<input type="text" name="user_name"></p>
 		<p>パスワード:<input type="text" name="password"></p>
